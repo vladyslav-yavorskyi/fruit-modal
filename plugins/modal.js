@@ -81,6 +81,9 @@ $.modal = function (options) {
       setTimeout(() => {
         $modal.classList.remove("hide");
         closing = false;
+        if (typeof options.onClose === "function") {
+          options.onClose();
+        }
       }, ANIMATION_SPEED);
     },
   };
@@ -102,30 +105,5 @@ $.modal = function (options) {
     setContent(html) {
       $modal.querySelector("[data-content]").innerHTML = html;
     },
-  });
-};
-
-$.render = function (fruits, showModal, deleteModal) {
-  $fruit = document.createElement("div");
-  $fruit.classList.add("row");
-  document.querySelector(".container").appendChild($fruit);
-  fruits.forEach((fruit) => {
-    $fruit.innerHTML += `
-    <div class="col">
-      <div class="card" style="width: 18rem">
-        <img
-          src="${fruit.img}"
-          class="card-img-top"
-        />
-        <div class="card-body">
-          <h5 class="card-title">${fruit.title}</h5>
-          <a onclick='${showModal({
-            title: "TEST",
-          })}' class="btn btn-primary">Show Price</a>
-          <a onclick='${deleteModal}' class="btn btn-danger">Delete</a>
-        </div>
-      </div>
-    </div>
-`;
   });
 };

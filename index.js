@@ -1,4 +1,4 @@
-const fruits = [
+let fruits = [
   {
     id: 1,
     title: "Apple",
@@ -31,7 +31,7 @@ const toHTML = (fruit) => `
         <div class="card-body">
           <h5 class="card-title">${fruit.title}</h5>
           <a class="btn btn-primary" data-btn="price" data-id="${fruit.id}">Show Price</a>
-          <a class="btn btn-danger" data-delete="delete">Delete</a>
+          <a class="btn btn-danger" data-btn="remove" data-id="${fruit.id}">Delete</a>
         </div>
       </div>
     </div>
@@ -52,23 +52,55 @@ const priceModal = $.modal({
     {
       text: "Close",
       type: "primary",
-      handler() {
+      handler: () => {
         priceModal.close();
       },
     },
   ],
 });
 
+const confirmModal = $.modal({
+  title: "Are you sure",
+  closable: false,
+  width: "400px",
+  footerButtons: [
+    {
+      text: "Cancel",
+      type: "secondary",
+      handler() {
+        confirmModal.close();
+      },
+    },
+    {
+      text: "Delete",
+      type: "danger",
+      handler() {
+        confirmModal.close();
+      },
+    },
+  ],
+});
+
 document.addEventListener("click", (event) => {
+  event.preventDefault();
   const btnType = event.target.dataset.btn;
   const id = +event.target.dataset.id;
+  const fruit = fruits.find((f) => f.id === id);
 
   if (btnType === "price") {
-    const fruit = fruits.find((f) => f.id === id);
-
     priceModal.setContent(`
-      <p>Price of ${fruit.title}: <string>${fruit.price}</string></p>
+      <p>Price of ${fruit.title}: <strong>${fruit.price}$</strong></p>
     `);
     priceModal.open();
+  } else if (btnType === "remove") {
+    $.confirm({
+      title: "Are you sure?",
+      content: `<p>You delete: <strong>${fruit.title}</strong></p>`,
+    })
+      .then(() => {
+        fruits = fruits.filter((f) => f.id !== id);
+        render();
+      })
+      .catch(() => console.log("Cancel"));
   }
 });
